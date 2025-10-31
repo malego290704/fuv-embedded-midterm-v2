@@ -1,0 +1,10 @@
+#ifndef _CONFIGURATION_H
+#define _CONFIGURATION_H
+
+#define MAX_USER_NAME_LENGTH 10
+#define MAX_USER_ID_LENGTH 10
+#define MAX_USER_COUNT 10
+
+#define MAX_ACCESS_QUEUE_LENGTH 10
+
+#endif
