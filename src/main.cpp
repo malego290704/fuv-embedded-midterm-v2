@@ -1,122 +1,53 @@
 #include <Arduino.h>
 
-
-
-
-
-
-
 #include "model/user.h"
 #include "model/userPermission.h"
 #include "model/userRequest.h"
+#include "model/userList.h"
 
 
-
-
-
-
-
+#include "onboardRGBHandler.h"
+#include "networkHandler.h"
 
 
 #include "configuration.h"
-
-
-
-
-User users[MAX_USER_COUNT];
-uint32_t userCount = 0;
-void setUserData(const char *id, const char *name, const uint_fast32_t color, const UserPermission permission) {
-  User *user = &users[userCount++];
-  snprintf(user->id, MAX_USER_ID_LENGTH, "%s", id);
-  snprintf(user->name, MAX_USER_NAME_LENGTH, "%s", name);
-  user->color = color;
-  user->permission = permission;
-  return;
-}
-void initUsers() {
-  setUserData("guest", "Guest", 0xFF0000, UserPermission::Unauthorized);
-  setUserData("minh", "Minh", 0x00FFFF, UserPermission::Admin);
-  setUserData("an", "An", 0xFF00FF, UserPermission::Authorized);
-}
-
-
-
-
-QueueHandle_t queueUserIndexAccessRequest;
-QueueHandle_t queueNeoHandler;
-void initQueues() {
-  queueUserIndexAccessRequest = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(UserRequest));
-  queueNeoHandler = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User));
-}
-
-
-void taskUserIndexAccessRequest(void*) {
-  UserRequest currentRequest;
-  for (;;) {
-    if (xQueueReceive(queueUserIndexAccessRequest, &currentRequest, portMAX_DELAY)) {
-      xQueueSend(queueNeoHandler, &currentRequest.user, 0);
-    }
-  }
-}
-
+#include "globalContext.h"
+struct GlobalContext context;
 
 
 #include<Adafruit_NeoPixel.h>
 Adafruit_NeoPixel onboardRGB(1, 45, NEO_GRB + NEO_KHZ800);
-void taskNeoHandler(void*) {
-  onboardRGB.begin();
-  onboardRGB.fill(onboardRGB.Color(0,0,0));
-  onboardRGB.show();
-  User currentUser;
-  uint32_t currentColor;
-  for (;;) {
-    if (xQueueReceive(queueNeoHandler, &currentUser, portMAX_DELAY)) {
-      currentColor = currentUser.color;
-      if (currentUser.permission == UserPermission::Admin) {
-        for (uint8_t i = 0; i < 5; i++) {
-          onboardRGB.fill(currentColor);
-          onboardRGB.show();
-          vTaskDelay(200 / portTICK_PERIOD_MS);
-          onboardRGB.fill(0);
-          onboardRGB.show();
-          vTaskDelay(200 / portTICK_PERIOD_MS);
-        }
-      } else if (currentUser.permission == UserPermission::Authorized) {
-        for (uint8_t i = 0; i < 3; i++) {
-          onboardRGB.fill(currentColor);
-          onboardRGB.show();
-          vTaskDelay(300 / portTICK_PERIOD_MS);
-          onboardRGB.fill(0);
-          onboardRGB.show();
-          vTaskDelay(200 / portTICK_PERIOD_MS);
-        }
-      } else if (currentUser.permission == UserPermission::Unauthorized) {
-        onboardRGB.fill(currentColor);
-        onboardRGB.show();
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        onboardRGB.fill(0);
-        onboardRGB.show();
-      }
-      vTaskDelay(2000 / portTICK_PERIOD_MS);
-    }
-  }
+
+
+void initUsers() {
+  UserList users = context.users;
+  users.addUser("guest", "Guest", 0xFF0000, UserPermission::Unauthorized);
+  users.addUser("minh", "Minh", 0x00FFFF, UserPermission::Admin);
+  users.addUser("an", "An", 0xFF00FF, UserPermission::Authorized);
 }
 
 
-
-
-
+void initGlobalContext() {
+  initUsers();
+  context.onboardRGB = onboardRGB;
+  context.littlefsMutex = xSemaphoreCreateMutex();
+  xSemaphoreTake(context.littlefsMutex, portMAX_DELAY);
+  LittleFS.begin();
+  xSemaphoreGive(context.littlefsMutex);
+}
 
 
 void setup() {
-  initUsers();
-  initQueues();
-  xTaskCreate(taskUserIndexAccessRequest, "UserRequestHandler", 2048, NULL, 1, NULL);
-  xTaskCreate(taskNeoHandler, "RGBHandler", 2048, NULL, 0, NULL);
-  delay(3000);
-  xQueueSend(queueUserIndexAccessRequest, &users[1], portMAX_DELAY);
+  Serial.begin(115200);
+  initGlobalContext();
+  delay(5000);
+  Serial.println("Hello World!");
+  xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
+  xTaskCreate(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL);
+  Serial.println("Finish init!");
 }
 
 void loop() {
-  vTaskDelete(NULL);
+  // vTaskDelete(NULL);
+  delay(1);
 }
