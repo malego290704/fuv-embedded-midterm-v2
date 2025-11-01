@@ -25,15 +25,19 @@ void initUsers() {
   users.addUser("minh", "Minh", 0x00FFFF, UserPermission::Admin);
   users.addUser("an", "An", 0xFF00FF, UserPermission::Authorized);
 }
+void initFS() {
+  xSemaphoreTake(context.littlefsMutex, portMAX_DELAY);
+  LittleFS.begin();
+  xSemaphoreGive(context.littlefsMutex);
+}
 
 
 void initGlobalContext() {
   initUsers();
   context.onboardRGB = onboardRGB;
+  context.networkInfo.init();
   context.littlefsMutex = xSemaphoreCreateMutex();
-  xSemaphoreTake(context.littlefsMutex, portMAX_DELAY);
-  LittleFS.begin();
-  xSemaphoreGive(context.littlefsMutex);
+  initFS();
 }
 
 

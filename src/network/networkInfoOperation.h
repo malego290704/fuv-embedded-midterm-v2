@@ -46,6 +46,7 @@ bool loadAccessPointCredentials(NetworkInfo* networkInfoP, SemaphoreHandle_t fsM
   }
   snprintf(networkInfoP->accessPointSSID, WIFI_CREDENTIAL_MAX_LENGTH, "%s", ssid);
   snprintf(networkInfoP->accessPointPassword, WIFI_CREDENTIAL_MAX_LENGTH, "%s", password);
+  networkInfoP->accessPointCredentialStatus = NetworkCredentialStatus::VALID;
   return true;
 }
 
@@ -89,6 +90,7 @@ bool loadStationCredentials(NetworkInfo* networkInfoP, SemaphoreHandle_t fsMutex
   }
   snprintf(networkInfoP->stationSSID, WIFI_CREDENTIAL_MAX_LENGTH, "%s", ssid);
   snprintf(networkInfoP->stationPassword, WIFI_CREDENTIAL_MAX_LENGTH, "%s", password);
+  networkInfoP->stationCredentialStatus = NetworkCredentialStatus::INVALID;
   return true;
 }
 

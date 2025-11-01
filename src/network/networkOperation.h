@@ -19,6 +19,8 @@ void networkOperationInit(GlobalContext* context) {
     Serial.println(context->networkInfo.stationSSID);
     Serial.println(context->networkInfo.stationPassword);
   }
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.softAP(context->networkInfo.accessPointSSID, context->networkInfo.accessPointPassword);
 }
 
 #endif
