@@ -8,11 +8,18 @@
 
 #include "onboardRGBHandler.h"
 #include "networkHandler.h"
+#include "loggerHandler.h"
 
 
 #include "configuration.h"
 #include "globalContext.h"
 struct GlobalContext context;
+
+
+#define LOG_E(format, ...) context.logger.log(LOGGER_ERROR, format, ##__VA_ARGS__)
+#define LOG_W(format, ...) context.logger.log(LOGGER_WARN,  format, ##__VA_ARGS__)
+#define LOG_I(format, ...) context.logger.log(LOGGER_INFO,  format, ##__VA_ARGS__)
+#define LOG_D(format, ...) context.logger.log(LOGGER_DEBUG, format, ##__VA_ARGS__)
 
 
 #include<Adafruit_NeoPixel.h>
@@ -45,10 +52,15 @@ void setup() {
   Serial.begin(115200);
   initGlobalContext();
   delay(5000);
-  Serial.println("Hello World!");
+  xTaskCreate(taskLoggerHandler, "LoggerHandler", 32000U, &context, 0, NULL);
+  Serial.println("Init Logger");
+  while (!context.logger.initSuccess) {
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
+  LOG_I("Finished init logger");
   xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL);
-  Serial.println("Finish init!");
+  LOG_I("Finished setup()");
 }
 
 void loop() {
