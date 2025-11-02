@@ -23,4 +23,20 @@ void networkOperationInit(GlobalContext* context) {
   WiFi.softAP(context->networkInfo.accessPointSSID, context->networkInfo.accessPointPassword);
 }
 
+void networkConnectWifiStation(GlobalContext* context) {
+  if (context->networkInfo.stationCredentialStatus != NetworkCredentialStatus::UNAVAILABLE) {
+    WiFi.disconnect();
+    WiFi.begin(context->networkInfo.stationSSID, context->networkInfo.stationPassword);
+    for (uint8_t i = 0; i < 5; i++) {
+      if (WiFi.status() == WL_CONNECTED) {
+        break;
+      }
+    }
+    if (WiFi.status() == WL_CONNECTED) {
+      context->networkInfo.stationCredentialStatus = NetworkCredentialStatus::VALID;
+      Serial.println("Successfully connected to WiFi!");
+    }
+  }
+}
+
 #endif
