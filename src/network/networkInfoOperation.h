@@ -16,7 +16,7 @@ bool loadAccessPointCredentials(NetworkInfo* networkInfoP, SemaphoreHandle_t fsM
   if (xSemaphoreTake(fsMutex, portMAX_DELAY) == pdTRUE) {
     file = LittleFS.open(ACCESS_POINT_SSID_FILENAME, FILE_READ);
     if (file && file.available()) {
-      bytes_read = file.readBytes(ssid, WIFI_CREDENTIAL_MAX_LENGTH - 1);
+      bytes_read = file.readBytes(ssid, WIFI_CREDENTIAL_MAX_LENGTH);
       ssid[bytes_read] = '\0';
       success = true;
     }
@@ -32,7 +32,7 @@ bool loadAccessPointCredentials(NetworkInfo* networkInfoP, SemaphoreHandle_t fsM
   if (xSemaphoreTake(fsMutex, portMAX_DELAY) == pdTRUE) {
     file = LittleFS.open(ACCESS_POINT_PASSWORD_FILENAME, FILE_READ);
     if (file && file.available()) {
-      bytes_read = file.readBytes(password, WIFI_CREDENTIAL_MAX_LENGTH - 1);
+      bytes_read = file.readBytes(password, WIFI_CREDENTIAL_MAX_LENGTH);
       password[bytes_read] = '\0';
       success = true;
     }

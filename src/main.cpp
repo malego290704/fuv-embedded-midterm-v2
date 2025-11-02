@@ -42,7 +42,6 @@ void initFS() {
 void initGlobalContext() {
   initUsers();
   context.onboardRGB = onboardRGB;
-  context.networkInfo.init();
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
 }
@@ -53,7 +52,6 @@ void setup() {
   initGlobalContext();
   delay(5000);
   xTaskCreate(taskLoggerHandler, "LoggerHandler", 32000U, &context, 0, NULL);
-  Serial.println("Init Logger");
   while (!context.logger.initSuccess) {
     vTaskDelay(pdMS_TO_TICKS(10));
   }

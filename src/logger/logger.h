@@ -24,13 +24,26 @@ typedef struct Logger {
   }
   void log(LogLevel level, const char *format, ...) {
     if (!this->initSuccess) return;
-    Serial.println(format);
     LogMessage msg;
+    msg.timestamp = time(NULL);
+    msg.level = level;
     va_list args;
     va_start(args, format);
-    msg.init(level, format, args);
+    int l = vsnprintf(msg.message, LOG_MESSAGE_MAX_LENGTH, format, args);
     va_end(args);
+    if (l >= LOG_MESSAGE_MAX_LENGTH) {
+      msg.message[LOG_MESSAGE_MAX_LENGTH - 2] = '.';
+      msg.message[LOG_MESSAGE_MAX_LENGTH - 3] = '.';
+      msg.message[LOG_MESSAGE_MAX_LENGTH - 4] = '.';
+    }
     xQueueSend(this->queueLogMessage, &msg, (TickType_t)0);
+  }
+  void logNow(const char *msg) {
+    if (xSemaphoreTake(this->serialMutex, portMAX_DELAY) == pdTRUE) {
+      Serial.println(msg);
+      delay(10);
+      xSemaphoreGive(this->serialMutex);
+    }
   }
   void resolve() {
     LogMessage msg;
@@ -60,6 +73,7 @@ typedef struct Logger {
         Serial.print(timeString);
         Serial.print(level_str);
         Serial.println(msg.message);
+        delay(10);
         xSemaphoreGive(this->serialMutex);
       }
     }

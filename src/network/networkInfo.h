@@ -10,11 +10,11 @@ enum NetworkCredentialStatus {
 };
 
 typedef struct NetworkInfo {
-  char accessPointSSID[WIFI_CREDENTIAL_MAX_LENGTH];
-  char accessPointPassword[WIFI_CREDENTIAL_MAX_LENGTH];
+  char accessPointSSID[WIFI_CREDENTIAL_MAX_LENGTH + 1];
+  char accessPointPassword[WIFI_CREDENTIAL_MAX_LENGTH + 1];
   NetworkCredentialStatus accessPointCredentialStatus;
-  char stationSSID[WIFI_CREDENTIAL_MAX_LENGTH];
-  char stationPassword[WIFI_CREDENTIAL_MAX_LENGTH];
+  char stationSSID[WIFI_CREDENTIAL_MAX_LENGTH + 1];
+  char stationPassword[WIFI_CREDENTIAL_MAX_LENGTH + 1];
   NetworkCredentialStatus stationCredentialStatus;
   void init() {
     this->accessPointCredentialStatus = NetworkCredentialStatus::UNAVAILABLE;
