@@ -3,6 +3,8 @@
 
 #include <LittleFS.h>
 
+#include "webserverAPI.h"
+
 #include "globalContext.h"
 
 void webserverInit(GlobalContext* contextP) {
@@ -12,6 +14,10 @@ void webserverInit(GlobalContext* contextP) {
   serverP->on("/", HTTP_GET, [](AsyncWebServerRequest* requestP) {
     requestP->send(LittleFS, "/web/index.html", "text/html");
   });
+  serverP->on("/sign", HTTP_GET, [](AsyncWebServerRequest* requestP) {
+    requestP->send(LittleFS, "/web/sign.html", "text/html");
+  });
+  webserverAPIInit(contextP);
   logger.log(LOGGER_DEBUG, "Waiting for WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);

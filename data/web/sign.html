@@ -131,7 +131,7 @@ function getCanvasBinaryArray(canvasEl, threshold = 128) {
 }
 async function sendData(obj) {
     try {
-        const response = await fetch('/save', {
+        const response = await fetch('/api/unlock', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(obj),
