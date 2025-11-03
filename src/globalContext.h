@@ -3,6 +3,7 @@
 
 #include <Adafruit_NeoPixel.h>
 #include <ESPAsyncWebServer.h>
+#include <LiquidCrystal_I2C.h>
 
 #include "model/userList.h"
 #include "network/networkInfo.h"
@@ -12,13 +13,14 @@
 
 struct GlobalContext {
   SemaphoreHandle_t littlefsMutex;
-  Adafruit_NeoPixel onboardRGB;
+  Adafruit_NeoPixel* onboardRGBP;
   UserList users;
   NetworkInfo networkInfo;
   Logger logger;
   AsyncWebServer* webserverP;
   AIEngine aiEngine;
   UserRequestQueue userReqQ;
+  LiquidCrystal_I2C* lcdP;
 };
 
 #endif

@@ -6,13 +6,18 @@
 #include "globalContext.h"
 
 void taskOnboardRGBHandler(void* pvParameters) {
-  GlobalContext* context = (GlobalContext*)pvParameters;
-  Logger* loggerP = &context->logger;
-  Adafruit_NeoPixel light = context->onboardRGB;
+  GlobalContext* contextP = (GlobalContext*)pvParameters;
+  contextP->logger.log(LOGGER_INFO, "Started taskOnboardRGBHandler");
+  Logger* loggerP = &contextP->logger;
+  Adafruit_NeoPixel light = *contextP->onboardRGBP;
   loggerP->log(LOGGER_INFO, "Init Onboard RGB");
   light.begin();
   for (;;) {
-    // Serial.println("Onboard RGB Infinite Loop!");
+    light.fill(0xffffff);
+    light.show();
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    light.fill(0);
+    light.show();
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
   vTaskDelete(NULL);

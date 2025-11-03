@@ -16,6 +16,7 @@ struct GlobalContext context;
 #include "loggerHandler.h"
 #include "webHandler.h"
 #include "userRequestHandler.h"
+#include "lcdHandler.h"
 
 
 #define LOG_E(format, ...) context.logger.log(LOGGER_ERROR, format, ##__VA_ARGS__)
@@ -26,6 +27,10 @@ struct GlobalContext context;
 
 #include<Adafruit_NeoPixel.h>
 Adafruit_NeoPixel onboardRGB(1, 45, NEO_GRB + NEO_KHZ800);
+
+#include<LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x21, 16, 2);
+
 
 AsyncWebServer webserver(80);
 
@@ -45,7 +50,8 @@ void initFS() {
 
 void initGlobalContext() {
   initUsers();
-  context.onboardRGB = onboardRGB;
+  context.onboardRGBP = &onboardRGB;
+  context.lcdP = &lcd;
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
   context.webserverP = &webserver;
@@ -68,6 +74,7 @@ void setup() {
   xTaskCreate(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL);
   xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskUserRequestHandler, "UserRequestHandler", 2048, &context, 1, NULL);
+  xTaskCreate(taskLCDHandler, "LCDHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskWebHandler, "WebHandler", 4096, &context, 1, NULL);
   LOG_I("Finished setup()");
 }

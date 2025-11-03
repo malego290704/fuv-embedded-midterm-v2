@@ -7,6 +7,7 @@
 
 void taskNetworkHandler(void* pvParameters) {
   GlobalContext* contextP = (GlobalContext*)pvParameters;
+  contextP->logger.log(LOGGER_INFO, "Started taskNetworkHandler");
   networkOperationInit(contextP);
   networkConnectWifiStation(contextP);
   networkSyncNTP(contextP);

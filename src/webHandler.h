@@ -7,6 +7,7 @@
 
 void taskWebHandler(void* pvParameters) {
   GlobalContext* contextP = (GlobalContext*)pvParameters;
+  contextP->logger.log(LOGGER_INFO, "Started taskWebHandler");
   webserverInit(contextP);
   for (;;) {
     vTaskDelay(pdMS_TO_TICKS(10000));
