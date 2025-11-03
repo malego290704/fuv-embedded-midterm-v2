@@ -52,8 +52,9 @@ button {
         <button id="btn-clear">
             <h2>Clear</h2>
         </button>
+        <input type="text" required id="name" placeholder="Username">
         <button id="btn-capture">
-            <h2>Capture</h2>
+            <h2>Log in</h2>
         </button>
     </main>
     <script>
@@ -142,11 +143,16 @@ async function sendData(obj) {
         console.error('Error:', error);
     }
 }
+let namebox = document.getElementById('name')
 document.getElementById('btn-capture').addEventListener('click', async (e) => {
+    if (namebox.value == '') {
+        alert('Enter your username!')
+        return
+    }
     const binaryMatrix = getCanvasBinaryArray(canvas, 128);
     const outputElement = document.getElementById('output');
     const txt = binaryMatrix.map(row => row.join('')).join('\n');
-    let obj = {data: txt}
+    let obj = {data: txt, username: namebox.value}
     clearCanvas()
     console.log(obj)
     console.log('Sending...')

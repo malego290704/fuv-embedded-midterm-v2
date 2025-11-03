@@ -72,12 +72,10 @@ typedef struct Logger {
       }
       if (xSemaphoreTake(this->serialMutex, portMAX_DELAY) == pdTRUE) {
         Serial.print(timeString);
-        delay(10);
         Serial.print(level_str);
-        delay(10);
         Serial.println(msg.message);
-        delay(200);
         Serial.flush();
+        delay(200);
         xSemaphoreGive(this->serialMutex);
       }
     }

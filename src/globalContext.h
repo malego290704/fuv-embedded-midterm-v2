@@ -8,6 +8,7 @@
 #include "network/networkInfo.h"
 #include "logger/logger.h"
 #include "ai/aiEngine.h"
+#include "model/userRequestQueue.h"
 
 struct GlobalContext {
   SemaphoreHandle_t littlefsMutex;
@@ -17,6 +18,7 @@ struct GlobalContext {
   Logger logger;
   AsyncWebServer* webserverP;
   AIEngine aiEngine;
+  UserRequestQueue userReqQ;
 };
 
 #endif

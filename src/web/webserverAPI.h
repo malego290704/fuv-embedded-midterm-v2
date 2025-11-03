@@ -13,21 +13,23 @@ void apiUnlock(GlobalContext* contextP, AsyncWebServerRequest* request, uint8_t*
     request->send(400, "application/json", "{\"status\":\"error\",\"message\":\"Invalid JSON\"}");
     return;
   }
-  if (doc["data"].is<const char*>()) {
-    const char* requestData = doc["data"];
-    char prediction[MAX_USER_ID_LENGTH], response[128];
-    float inputTensor[576];
-    int j = 0;
-    for (int i = 0; i < 576; i++) {
-      if (requestData[j] == '\n') {
-        j++;
+  if (doc["username"].is<const char*>()) {
+    if (doc["data"].is<const char*>()) {
+      const char* requestData = doc["data"];
+      char prediction[MAX_USER_ID_LENGTH], response[128];
+      float inputTensor[576];
+      int j = 0;
+      for (int i = 0; i < 576; i++) {
+        if (requestData[j] == '\n') {
+          j++;
+        }
+        inputTensor[i] = requestData[j++] - 48;
       }
-      inputTensor[i] = requestData[j++] - 48;
+      snprintf(prediction, MAX_USER_ID_LENGTH, "%s", contextP->aiEngine.predict(inputTensor));
+      snprintf(response, 128, "{\"status\":\"good\", \"prediction\":\"%s\"}", prediction);
+      request->send(200, "application/json", response);
+      return;
     }
-    snprintf(prediction, MAX_USER_ID_LENGTH, "%s", contextP->aiEngine.predict(inputTensor));
-    snprintf(response, 128, "{\"status\":\"good\", \"prediction\":\"%s\"}", prediction);
-    request->send(200, "application/json", response);
-    return;
   }
   request->send(400, "application/json", "{\"status\":\"error\",\"message\":\"Invalid JSON template\"}");
 }
