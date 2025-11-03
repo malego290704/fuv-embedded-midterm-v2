@@ -54,6 +54,7 @@ void initGlobalContext() {
   initUsers();
   context.onboardRGBP = &onboardRGB;
   context.externalRGBP = &externalRGB;
+  lcd.init();
   context.lcdP = &lcd;
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();

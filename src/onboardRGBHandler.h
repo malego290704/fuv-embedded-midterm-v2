@@ -9,15 +9,15 @@ void taskOnboardRGBHandler(void* pvParameters) {
   GlobalContext* contextP = (GlobalContext*)pvParameters;
   contextP->logger.log(LOGGER_INFO, "Started taskOnboardRGBHandler");
   Logger* loggerP = &contextP->logger;
-  Adafruit_NeoPixel light = *contextP->onboardRGBP;
+  Adafruit_NeoPixel* lightP = contextP->onboardRGBP;
   loggerP->log(LOGGER_INFO, "Init Onboard RGB");
-  light.begin();
+  lightP->begin();
   for (;;) {
-    light.fill(0xffffff);
-    light.show();
+    lightP->fill(0xffffff);
+    lightP->show();
     vTaskDelay(pdMS_TO_TICKS(1000));
-    light.fill(0);
-    light.show();
+    lightP->fill(0);
+    lightP->show();
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
   vTaskDelete(NULL);

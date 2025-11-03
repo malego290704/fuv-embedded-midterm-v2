@@ -9,15 +9,15 @@ void taskExternalRGBHandler(void* pvParameters) {
   GlobalContext* contextP = (GlobalContext*)pvParameters;
   contextP->logger.log(LOGGER_INFO, "Started taskExternalRGBHandler");
   Logger* loggerP = &contextP->logger;
-  Adafruit_NeoPixel light = *contextP->externalRGBP;
+  Adafruit_NeoPixel* lightP = contextP->externalRGBP;
   loggerP->log(LOGGER_INFO, "Init External RGB");
-  light.begin();
+  lightP->begin();
   for (;;) {
-    light.fill(0xffffff);
-    light.show();
+    lightP->fill(0xffffff);
+    lightP->show();
     vTaskDelay(pdMS_TO_TICKS(2000));
-    light.fill(0);
-    light.show();
+    lightP->fill(0);
+    lightP->show();
     vTaskDelay(pdMS_TO_TICKS(2000));
   }
   vTaskDelete(NULL);
