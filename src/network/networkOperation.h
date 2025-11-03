@@ -12,7 +12,7 @@ void networkOperationInit(GlobalContext* contextP) {
   Logger* loggerP = &contextP->logger;
   loggerP->log(LOGGER_DEBUG, "Starting network operation");
   NetworkInfo* networkInfoP = &contextP->networkInfo;
-  contextP->networkInfo.init();
+  networkInfoP->init();
   if (loadAccessPointCredentials(networkInfoP, contextP->littlefsMutex)) {
     loggerP->log(LOGGER_DEBUG, "Successfully read AP credentials!");
     loggerP->log(LOGGER_DEBUG, "AP SSID:     %s", networkInfoP->accessPointSSID);
@@ -24,37 +24,33 @@ void networkOperationInit(GlobalContext* contextP) {
     loggerP->log(LOGGER_DEBUG, "STA Password: %s", networkInfoP->stationPassword);
   }
   WiFi.mode(WIFI_AP_STA);
-  WiFi.softAP(contextP->networkInfo.accessPointSSID, contextP->networkInfo.accessPointPassword);
+  WiFi.softAP(networkInfoP->accessPointSSID, networkInfoP->accessPointPassword);
   loggerP->log(LOGGER_DEBUG, "Successfully opened AP!");
 }
 
 void networkConnectWifiStation(GlobalContext* contextP) {
   Logger* loggerP = &contextP->logger;
   if (contextP->networkInfo.stationCredentialStatus != NetworkCredentialStatus::UNAVAILABLE) {
-    loggerP->log(LOGGER_DEBUG, "Disconnecting WiFi...");
-    WiFi.disconnect();
     WiFi.begin(contextP->networkInfo.stationSSID, contextP->networkInfo.stationPassword);
-    loggerP->log(LOGGER_DEBUG, "Connecting WiFi...");
-    for (uint8_t i = 0; i < 20; i++) {
-      if (WiFi.status() == WL_CONNECTED) {
-        break;
-      }
-      vTaskDelay(pdMS_TO_TICKS(200));
-    }
-    if (WiFi.status() == WL_CONNECTED) {
-      loggerP->log(LOGGER_DEBUG, "Successfully connected to WiFi!");
-    }
   }
 }
 
-void networkSyncNTP(GlobalContext* contextP) {
-  Logger* loggerP = &contextP->logger;
+void networkTrySyncNTP(GlobalContext* contextP) {
+  if (contextP->networkInfo.ntpSynced) {
+    return;
+  }
   if (WiFi.status() != WL_CONNECTED) {
     return;
   }
+  Logger* loggerP = &contextP->logger;
   loggerP->log(LOGGER_DEBUG, "Syncing NTP...");
   configTime(25200, 0, "pool.ntp.org");
-  loggerP->log(LOGGER_DEBUG, "NTP synced!");
+  if (time(NULL) > LOGGER_MIN_VALID_TIME) {
+    loggerP->log(LOGGER_DEBUG, "NTP synced!");
+    contextP->networkInfo.ntpSynced = true;
+  } else {
+    loggerP->log(LOGGER_WARN, "Cannot sync NTP!");
+  }
 }
 
 #endif

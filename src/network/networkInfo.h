@@ -15,7 +15,11 @@ typedef struct NetworkInfo {
   char stationSSID[WIFI_CREDENTIAL_MAX_LENGTH + 1];
   char stationPassword[WIFI_CREDENTIAL_MAX_LENGTH + 1];
   NetworkCredentialStatus stationCredentialStatus;
+  volatile bool ntpSynced;
+  char stationIP[16];
   void init() {
+    this->ntpSynced = false;
+    this->stationIP[15] = '\0';
     this->accessPointCredentialStatus = NetworkCredentialStatus::UNAVAILABLE;
     this->stationCredentialStatus = NetworkCredentialStatus::UNAVAILABLE;
   }

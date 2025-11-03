@@ -12,6 +12,7 @@ struct GlobalContext context;
 
 
 #include "onboardRGBHandler.h"
+#include "externalRGBHandler.h"
 #include "networkHandler.h"
 #include "loggerHandler.h"
 #include "webHandler.h"
@@ -27,6 +28,7 @@ struct GlobalContext context;
 
 #include<Adafruit_NeoPixel.h>
 Adafruit_NeoPixel onboardRGB(1, 45, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel externalRGB(4, GPIO_NUM_6, NEO_GRB + NEO_KHZ800);
 
 #include<LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x21, 16, 2);
@@ -51,6 +53,7 @@ void initFS() {
 void initGlobalContext() {
   initUsers();
   context.onboardRGBP = &onboardRGB;
+  context.externalRGBP = &externalRGB;
   context.lcdP = &lcd;
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
@@ -72,8 +75,9 @@ void setup() {
   }
   LOG_I("Finished init logger");
   xTaskCreate(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL);
-  xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskUserRequestHandler, "UserRequestHandler", 2048, &context, 1, NULL);
+  xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
+  xTaskCreate(taskExternalRGBHandler, "ExternalRGBHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskLCDHandler, "LCDHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskWebHandler, "WebHandler", 4096, &context, 1, NULL);
   LOG_I("Finished setup()");

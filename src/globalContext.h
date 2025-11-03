@@ -14,6 +14,7 @@
 struct GlobalContext {
   SemaphoreHandle_t littlefsMutex;
   Adafruit_NeoPixel* onboardRGBP;
+  Adafruit_NeoPixel* externalRGBP;
   UserList users;
   NetworkInfo networkInfo;
   Logger logger;
