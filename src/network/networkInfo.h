@@ -5,8 +5,7 @@
 
 enum NetworkCredentialStatus {
   UNAVAILABLE,
-  INVALID,
-  VALID
+  AVAILABLE
 };
 
 typedef struct NetworkInfo {

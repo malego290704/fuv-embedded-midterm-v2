@@ -2,6 +2,7 @@
 #define _GLOBAL_CONTEXT_H
 
 #include <Adafruit_NeoPixel.h>
+#include <ESPAsyncWebServer.h>
 
 #include "model/userList.h"
 #include "network/networkInfo.h"
@@ -13,6 +14,7 @@ struct GlobalContext {
   UserList users;
   NetworkInfo networkInfo;
   Logger logger;
+  AsyncWebServer* webserverP;
 };
 
 #endif

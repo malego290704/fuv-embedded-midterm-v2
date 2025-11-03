@@ -36,8 +36,8 @@ typedef struct Logger {
       msg.message[LOG_MESSAGE_MAX_LENGTH - 3] = '.';
       msg.message[LOG_MESSAGE_MAX_LENGTH - 4] = '.';
     }
-    xQueueSend(this->queueLogMessage, &msg, pdMS_TO_TICKS(5));
-    delay(10);
+    xQueueSend(this->queueLogMessage, &msg, pdMS_TO_TICKS(10));
+    delay(20);
   }
   void logNow(const char *msg) {
     if (xSemaphoreTake(this->serialMutex, portMAX_DELAY) == pdTRUE) {

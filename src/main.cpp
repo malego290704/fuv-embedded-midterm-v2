@@ -1,5 +1,10 @@
 #include <Arduino.h>
 
+#include "configuration.h"
+#include "globalContext.h"
+struct GlobalContext context;
+
+
 #include "model/user.h"
 #include "model/userPermission.h"
 #include "model/userRequest.h"
@@ -9,11 +14,7 @@
 #include "onboardRGBHandler.h"
 #include "networkHandler.h"
 #include "loggerHandler.h"
-
-
-#include "configuration.h"
-#include "globalContext.h"
-struct GlobalContext context;
+#include "webHandler.h"
 
 
 #define LOG_E(format, ...) context.logger.log(LOGGER_ERROR, format, ##__VA_ARGS__)
@@ -24,6 +25,8 @@ struct GlobalContext context;
 
 #include<Adafruit_NeoPixel.h>
 Adafruit_NeoPixel onboardRGB(1, 45, NEO_GRB + NEO_KHZ800);
+
+AsyncWebServer webserver(80);
 
 
 void initUsers() {
@@ -44,6 +47,7 @@ void initGlobalContext() {
   context.onboardRGB = onboardRGB;
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
+  context.webserverP = &webserver;
 }
 
 
@@ -51,13 +55,14 @@ void setup() {
   Serial.begin(115200);
   initGlobalContext();
   delay(5000);
-  xTaskCreate(taskLoggerHandler, "LoggerHandler", 32000U, &context, 0, NULL);
+  xTaskCreate(taskLoggerHandler, "LoggerHandler", 32000U, &context, 1, NULL);
   while (!context.logger.initSuccess) {
     vTaskDelay(pdMS_TO_TICKS(10));
   }
   LOG_I("Finished init logger");
   xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL);
+  xTaskCreate(taskWebHandler, "WebHandler", 4096, &context, 1, NULL);
   LOG_I("Finished setup()");
 }
 

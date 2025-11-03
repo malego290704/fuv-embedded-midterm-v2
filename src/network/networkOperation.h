@@ -41,7 +41,6 @@ void networkConnectWifiStation(GlobalContext* contextP) {
       vTaskDelay(pdMS_TO_TICKS(200));
     }
     if (WiFi.status() == WL_CONNECTED) {
-      contextP->networkInfo.stationCredentialStatus = NetworkCredentialStatus::VALID;
       logger.log(LOGGER_DEBUG, "Successfully connected to WiFi!");
     }
   }
