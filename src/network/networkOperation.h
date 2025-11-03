@@ -25,7 +25,6 @@ void networkOperationInit(GlobalContext* contextP) {
   }
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(networkInfoP->accessPointSSID, networkInfoP->accessPointPassword);
-  loggerP->log(LOGGER_DEBUG, "Successfully opened AP!");
 }
 
 void networkConnectWifiStation(GlobalContext* contextP) {

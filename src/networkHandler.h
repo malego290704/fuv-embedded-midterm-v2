@@ -15,6 +15,11 @@ void taskNetworkHandler(void* pvParameters) {
   Logger* loggerP = &contextP->logger;
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.setHostname("ESP32SmartLockDevice");
+  WiFiEventId_t wifiEventAccessPointConnected = WiFi.onEvent([contextP](WiFiEvent_t event, WiFiEventInfo_t info) {
+    snprintf(contextP->networkInfo.accessPointIP, 16, "%s", WiFi.softAPIP().toString().c_str());
+    contextP->logger.log(LOGGER_INFO, "Launched WiFi access point!");
+    contextP->logger.log(LOGGER_INFO, "AP IP: %s", contextP->networkInfo.accessPointIP);
+  }, WiFiEvent_t::ARDUINO_EVENT_WIFI_AP_START);
   WiFiEventId_t wifiEventStationConnect = WiFi.onEvent([contextP](WiFiEvent_t event, WiFiEventInfo_t info) {
     contextP->logger.log(LOGGER_INFO, "Connected to WiFi as station!");
     networkTrySyncNTP(contextP);
@@ -22,13 +27,13 @@ void taskNetworkHandler(void* pvParameters) {
   WiFiEventId_t wifiEventStationDisconnect = WiFi.onEvent([contextP](WiFiEvent_t event, WiFiEventInfo_t info) {
     contextP->networkInfo.stationIP[0] = '\0';
     contextP->logger.log(LOGGER_WARN, "Disconnected to WiFi as station!");
-    contextP->logger.log(LOGGER_WARN, "Reason for disconnection: %s", info.wifi_sta_disconnected.reason);
-    networkOperationInit(contextP);
+    contextP->logger.log(LOGGER_WARN, "Reason for disconnection: %d", info.wifi_sta_disconnected.reason);
+    networkConnectWifiStation(contextP);
   }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
   WiFiEventId_t wifiEventStationGotIP = WiFi.onEvent([contextP](WiFiEvent_t event, WiFiEventInfo_t info) {
     snprintf(contextP->networkInfo.stationIP, 16, "%s", WiFi.localIP().toString().c_str());
     contextP->logger.log(LOGGER_INFO, "Received IP as station!");
-    contextP->logger.log(LOGGER_INFO, "IP: %s", contextP->networkInfo.stationIP);
+    contextP->logger.log(LOGGER_INFO, "STA IP: %s", contextP->networkInfo.stationIP);
   }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
   networkConnectWifiStation(contextP);
   networkOperationInit(contextP);
