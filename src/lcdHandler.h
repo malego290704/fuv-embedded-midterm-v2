@@ -16,9 +16,25 @@ void taskLCDHandler(void* pvParameters) {
   lcd.init();
   lcd.clear();
   lcd.backlight();
+  contextP->logger.log(LOGGER_INFO, "Starting taskLCDHandler loop");
   for (;;) {
     if (state == DisplayState::IDLE) {
-      //
+      lcd.setCursor(0, 0);
+      if (contextP->networkInfo.accessPointIP[0] == '\0') {
+        lcd.print("No IP for AP    ");
+      } else {
+        lcd.print("A               ");
+        lcd.setCursor(1, 0);
+        lcd.print(contextP->networkInfo.accessPointIP);
+      }
+      lcd.setCursor(0, 1);
+      if (contextP->networkInfo.stationIP[0] == '\0') {
+        lcd.print("No IP for STA   ");
+      } else {
+        lcd.print("S               ");
+        lcd.setCursor(1, 1);
+        lcd.print(contextP->networkInfo.stationIP);
+      }
     } else if (state == DisplayState::USER_INFO) {
       //
     }

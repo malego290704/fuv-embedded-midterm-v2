@@ -59,6 +59,7 @@ void initGlobalContext() {
   initFS();
   context.webserverP = &webserver;
   context.aiEngine.init();
+  context.networkInfo.init();
 }
 
 

@@ -12,7 +12,6 @@ void networkOperationInit(GlobalContext* contextP) {
   Logger* loggerP = &contextP->logger;
   loggerP->log(LOGGER_DEBUG, "Starting network operation");
   NetworkInfo* networkInfoP = &contextP->networkInfo;
-  networkInfoP->init();
   if (loadAccessPointCredentials(networkInfoP, contextP->littlefsMutex)) {
     loggerP->log(LOGGER_DEBUG, "Successfully read AP credentials!");
     loggerP->log(LOGGER_DEBUG, "AP SSID:     %s", networkInfoP->accessPointSSID);
