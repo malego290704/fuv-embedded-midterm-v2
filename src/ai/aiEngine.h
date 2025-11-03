@@ -12,7 +12,7 @@
 
 #include "configuration.h"
 
-constexpr uint32_t _kTensorArenaSize = g_model_len * 4;
+constexpr uint32_t _kTensorArenaSize = g_model_len * 1.1;
 
 constexpr uint32_t aiInputSize = 24 * 24;
 constexpr uint32_t aiOutputSize = 2;
