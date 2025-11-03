@@ -7,20 +7,15 @@
 
 typedef struct UserRequest {
   User* userP;
-  struct tm timestamp;
+  time_t timestamp;
   void init(User* userP) {
     this->userP = userP;
-    if (!getLocalTime(&this->timestamp)) {
-      // TODO: handle error
-    }
+    this->timestamp = time(NULL);
   }
 } UserRequest;
 void initUserRequests(UserRequest *reqP, User *userP) {
   reqP->userP = userP;
-  if (!getLocalTime(&reqP->timestamp)) {
-    // TODO: handle error
-    return;
-  }
+  reqP->timestamp = time(NULL);
 }
 
 #endif

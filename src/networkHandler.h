@@ -6,9 +6,10 @@
 #include "globalContext.h"
 
 void taskNetworkHandler(void* pvParameters) {
-  GlobalContext* context = (GlobalContext*)pvParameters;
-  networkOperationInit(context);
-  networkConnectWifiStation(context);
+  GlobalContext* contextP = (GlobalContext*)pvParameters;
+  networkOperationInit(contextP);
+  networkConnectWifiStation(contextP);
+  networkSyncNTP(contextP);
   for (;;) {
     // Serial.println("Network Infinite Loop!");
     vTaskDelay(pdMS_TO_TICKS(1000));
