@@ -16,7 +16,7 @@ struct GlobalContext {
   NetworkInfo networkInfo;
   Logger logger;
   AsyncWebServer* webserverP;
-  struct AIEngine aiEngine;
+  AIEngine aiEngine;
 };
 
 #endif

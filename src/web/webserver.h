@@ -9,8 +9,8 @@
 
 void webserverInit(GlobalContext* contextP) {
   AsyncWebServer* serverP = contextP->webserverP;
-  Logger logger = contextP->logger;
-  logger.log(LOGGER_DEBUG, "Init webserver");
+  Logger* loggerP = &contextP->logger;
+  loggerP->log(LOGGER_DEBUG, "Init webserver");
   serverP->on("/", HTTP_GET, [](AsyncWebServerRequest* requestP) {
     requestP->send(LittleFS, "/web/index.html", "text/html");
   });
@@ -18,13 +18,13 @@ void webserverInit(GlobalContext* contextP) {
     requestP->send(LittleFS, "/web/sign.html", "text/html");
   });
   webserverAPIInit(contextP);
-  logger.log(LOGGER_DEBUG, "Waiting for WiFi...");
+  loggerP->log(LOGGER_DEBUG, "Waiting for WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
   }
-  logger.log(LOGGER_DEBUG, "Begin webserver");
+  loggerP->log(LOGGER_DEBUG, "Begin webserver");
   serverP->begin();
-  logger.log(LOGGER_DEBUG, "Webserver Created!");
+  loggerP->log(LOGGER_DEBUG, "Webserver Created!");
 }
 
 #endif

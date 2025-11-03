@@ -37,12 +37,12 @@ typedef struct Logger {
       msg.message[LOG_MESSAGE_MAX_LENGTH - 4] = '.';
     }
     xQueueSend(this->queueLogMessage, &msg, pdMS_TO_TICKS(10));
-    delay(20);
+    delay(50);
   }
   void logNow(const char *msg) {
     if (xSemaphoreTake(this->serialMutex, portMAX_DELAY) == pdTRUE) {
       Serial.println(msg);
-      delay(30);
+      delay(50);
       xSemaphoreGive(this->serialMutex);
     }
   }
@@ -72,9 +72,12 @@ typedef struct Logger {
       }
       if (xSemaphoreTake(this->serialMutex, portMAX_DELAY) == pdTRUE) {
         Serial.print(timeString);
+        delay(10);
         Serial.print(level_str);
+        delay(10);
         Serial.println(msg.message);
         delay(200);
+        Serial.flush();
         xSemaphoreGive(this->serialMutex);
       }
     }

@@ -19,7 +19,7 @@ constexpr uint32_t aiOutputSize = 2;
 char aiOutputLabels[MAX_USER_COUNT][MAX_USER_ID_LENGTH] = {"an", "minh"};
 char aiOutputNoLabel[MAX_USER_ID_LENGTH] = "guest";
 
-struct AIEngine {
+typedef struct AIEngine {
   TfLiteTensor* input;
   TfLiteTensor* output;
   const uint32_t kTensorArenaSize = _kTensorArenaSize;
@@ -75,6 +75,6 @@ struct AIEngine {
       return aiOutputNoLabel;
     }
   }
-};
+} AIEngine;
 
 #endif
