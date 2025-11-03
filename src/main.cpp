@@ -48,12 +48,16 @@ void initGlobalContext() {
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
   context.webserverP = &webserver;
+  context.aiEngine.init();
 }
 
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("Starting...");
+  delay(2000);
   initGlobalContext();
+  Serial.println("Finished init Global Context.");
   delay(5000);
   xTaskCreate(taskLoggerHandler, "LoggerHandler", 32000U, &context, 1, NULL);
   while (!context.logger.initSuccess) {

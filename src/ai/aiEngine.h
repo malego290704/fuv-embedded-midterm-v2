@@ -12,7 +12,7 @@
 
 #include "configuration.h"
 
-constexpr uint32_t _kTensorArenaSize = g_model_len * 2;
+constexpr uint32_t _kTensorArenaSize = g_model_len * 4;
 
 constexpr uint32_t aiInputSize = 24 * 24;
 constexpr uint32_t aiOutputSize = 2;
@@ -26,9 +26,16 @@ struct AIEngine {
   uint8_t tensorArena[_kTensorArenaSize];
   const tflite::Model* model;
   tflite::MicroInterpreter* intepreter;
-  tflite::MicroMutableOpResolver<7> resolver;
+  tflite::MicroMutableOpResolver<10> resolver;
+  tflite::MicroErrorReporter microErrorReporter;
+  tflite::ErrorReporter* errorReporter = nullptr;
   void init() {
+    errorReporter = &microErrorReporter;
     this->model = tflite::GetModel(g_model);
+    if (!model) {
+      errorReporter->Report("Failed to get model from g_model array");
+      return;
+    }
     this->resolver.AddFullyConnected();
     this->resolver.AddConv2D();
     this->resolver.AddMaxPool2D();
@@ -36,8 +43,11 @@ struct AIEngine {
     this->resolver.AddReshape();
     this->resolver.AddRelu();
     this->resolver.AddStridedSlice();
-    this->intepreter = new tflite::MicroInterpreter(this->model, this->resolver, this->tensorArena, this->kTensorArenaSize, nullptr);
+    this->resolver.AddShape();
+    this->resolver.AddPack();
+    this->intepreter = new tflite::MicroInterpreter(this->model, this->resolver, this->tensorArena, this->kTensorArenaSize, this->errorReporter);
     if (this->intepreter->AllocateTensors() != kTfLiteOk) {
+      errorReporter->Report("AllocateTensors() failed.");
       return;
     }
     this->input = this->intepreter->input(0);
@@ -48,7 +58,7 @@ struct AIEngine {
       this->input->data.f[i] = input1D[i];
     }
     if (this->intepreter->Invoke() != kTfLiteOk) {
-      return;
+      return aiOutputNoLabel;
     }
     float max_prob = 0.0f;
     int predicted_class_index = -1;

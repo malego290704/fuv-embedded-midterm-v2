@@ -34,6 +34,7 @@ void networkConnectWifiStation(GlobalContext* contextP) {
     logger.log(LOGGER_DEBUG, "Disconnecting WiFi...");
     WiFi.disconnect();
     WiFi.begin(contextP->networkInfo.stationSSID, contextP->networkInfo.stationPassword);
+    logger.log(LOGGER_DEBUG, "Connecting WiFi...");
     for (uint8_t i = 0; i < 20; i++) {
       if (WiFi.status() == WL_CONNECTED) {
         break;
