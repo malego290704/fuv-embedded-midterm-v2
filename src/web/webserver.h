@@ -17,6 +17,15 @@ void webserverInit(GlobalContext* contextP) {
   serverP->on("/sign", HTTP_GET, [](AsyncWebServerRequest* requestP) {
     requestP->send(LittleFS, "/web/sign.html", "text/html");
   });
+  serverP->on("/an", HTTP_GET, [](AsyncWebServerRequest* requestP) {
+    requestP->send(LittleFS, "/web/an.html", "text/html");
+  });
+  serverP->on("/minh", HTTP_GET, [](AsyncWebServerRequest* requestP) {
+    requestP->send(LittleFS, "/web/minh.html", "text/html");
+  });
+  serverP->on("/guest", HTTP_GET, [](AsyncWebServerRequest* requestP) {
+    requestP->send(LittleFS, "/web/guest.html", "text/html");
+  });
   webserverAPIInit(contextP);
   loggerP->log(LOGGER_DEBUG, "Waiting for WiFi...");
   while (WiFi.status() != WL_CONNECTED) {

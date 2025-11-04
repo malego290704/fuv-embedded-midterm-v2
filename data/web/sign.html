@@ -198,8 +198,11 @@ async function sendData(obj) {
         });
         const data = await response.json();
         console.log('Success:', data);
+        alert(`Hello ${data.prediction}!`)
+        window.location.href = `/${data.prediction}`
     } catch (error) {
         console.error('Error:', error);
+        alert('Error encounted!')
     }
 }
 let namebox = document.getElementById('name')
@@ -212,6 +215,7 @@ document.getElementById('btn-capture').addEventListener('click', async (e) => {
     const outputElement = document.getElementById('output');
     const txt = binaryMatrix.map(row => row.join('')).join('\n');
     let obj = {data: txt, username: namebox.value}
+    namebox.value = ""
     clearCanvas()
     console.log(obj)
     console.log('Sending...')

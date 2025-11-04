@@ -63,7 +63,7 @@ void initGlobalContext() {
   lcd.clear();
   lcd.backlight();
   lcd.setCursor(0,0);
-  lcd.print("Initing...");
+  lcd.print("Initializing...");
   context.lcdP = &lcd;
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
@@ -103,6 +103,5 @@ void setup() {
 }
 
 void loop() {
-  // vTaskDelete(NULL);
-  delay(1);
+  vTaskDelete(NULL);
 }
