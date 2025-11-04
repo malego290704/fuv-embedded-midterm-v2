@@ -32,6 +32,13 @@ void apiUnlock(GlobalContext* contextP, AsyncWebServerRequest* request, uint8_t*
       loggerP->log(LOGGER_DEBUG, "Got prediction: %s", prediction);
       snprintf(response, 128, "{\"status\":\"good\", \"prediction\":\"%s\"}", prediction);
       request->send(200, "application/json", response);
+      int c = contextP->users.count;
+      for (int i = 0; i < c; i++) {
+        if (strcmp(contextP->users.list[i], prediction) == 0) {
+          contextP->userReqQ.newRequest(&contextP->users.list[i]);
+          break;
+        }
+      }
       return;
     }
   }

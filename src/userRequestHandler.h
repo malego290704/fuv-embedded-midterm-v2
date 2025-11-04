@@ -13,6 +13,7 @@ void taskUserRequestHandler(void* pvParameters) {
   UserRequest request;
   for (;;) {
     request = contextP->userReqQ.resolve();
+    contextP->logger.log(LOGGER_INFO, "Received a request for: %s", request.userP->name);
   }
   vTaskDelete(NULL);
 }
