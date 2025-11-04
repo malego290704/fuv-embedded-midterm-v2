@@ -12,13 +12,45 @@ void taskExternalRGBHandler(void* pvParameters) {
   Adafruit_NeoPixel* lightP = contextP->externalRGBP;
   loggerP->log(LOGGER_INFO, "Init External RGB");
   lightP->begin();
+  User* currentUser;
+  uint32_t currentColor;
   for (;;) {
-    lightP->fill(0xffffff);
-    lightP->show();
-    vTaskDelay(pdMS_TO_TICKS(2000));
-    lightP->fill(0);
-    lightP->show();
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    // lightP->fill(0xffffff);
+    // lightP->show();
+    // vTaskDelay(pdMS_TO_TICKS(2000));
+    // lightP->fill(0);
+    // lightP->show();
+    // vTaskDelay(pdMS_TO_TICKS(2000));
+    if (xQueueReceive(contextP->externalRGBInfoQ, &currentUser, pdMS_TO_TICKS(10)) == pdTRUE) {
+      loggerP->log(LOGGER_INFO, "Lighting ExternalRGB for %s", currentUser->name);
+      currentColor = currentUser->color;
+      if (currentUser->permission == UserPermission::Admin) {
+        for (uint8_t i = 0; i < 5; i++) {
+          lightP->fill(currentColor);
+          lightP->show();
+          vTaskDelay(pdMS_TO_TICKS(200));
+          lightP->fill(0);
+          lightP->show();
+          vTaskDelay(pdMS_TO_TICKS(200));
+        }
+      } else if (currentUser->permission == UserPermission::Authorized) {
+        for (uint8_t i = 0; i < 3; i++) {
+          lightP->fill(currentColor);
+          lightP->show();
+          vTaskDelay(pdMS_TO_TICKS(300));
+          lightP->fill(0);
+          lightP->show();
+          vTaskDelay(pdMS_TO_TICKS(200));
+        }
+      } else if (currentUser->permission == UserPermission::Unauthorized) {
+        lightP->fill(currentColor);
+        lightP->show();
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        lightP->fill(0);
+        lightP->show();
+      }
+      vTaskDelay(pdMS_TO_TICKS(2000));
+    }
   }
   vTaskDelete(NULL);
 }

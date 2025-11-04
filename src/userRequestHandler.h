@@ -9,11 +9,17 @@
 void taskUserRequestHandler(void* pvParameters) {
   GlobalContext* contextP = (GlobalContext*)pvParameters;
   contextP->logger.log(LOGGER_INFO, "Started taskUserRequestHandler");
-  contextP->userReqQ.init();
   UserRequest request;
   for (;;) {
-    request = contextP->userReqQ.resolve();
-    contextP->logger.log(LOGGER_INFO, "Received a request for: %s", request.userP->name);
+    // request = contextP->userReqQ.resolve();
+    // contextP->logger.log(LOGGER_INFO, "Received a request for: %s", request.userP->name);
+    // xQueueSend(contextP->onboardRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
+    // xQueueSend(contextP->externalRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
+    if (xQueueReceive(contextP->userReqQ.queue, &request, portMAX_DELAY)) {
+      contextP->logger.log(LOGGER_INFO, "Received a request for: %s", request.userP->name);
+      xQueueSend(contextP->onboardRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
+      xQueueSend(contextP->externalRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
+    }
   }
   vTaskDelete(NULL);
 }

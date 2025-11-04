@@ -38,10 +38,10 @@ AsyncWebServer webserver(80);
 
 
 void initUsers() {
-  UserList users = context.users;
-  users.addUser("guest", "Guest", 0xFF0000, UserPermission::Unauthorized);
-  users.addUser("minh", "Minh", 0x00FFFF, UserPermission::Admin);
-  users.addUser("an", "An", 0xFF00FF, UserPermission::Authorized);
+  UserList* usersP = &context.users;
+  usersP->addUser("guest", "Guest", 0xFF0000, UserPermission::Unauthorized);
+  usersP->addUser("minh", "Minh", 0x00FFFF, UserPermission::Admin);
+  usersP->addUser("an", "An", 0xFF00FF, UserPermission::Authorized);
 }
 void initFS() {
   xSemaphoreTake(context.littlefsMutex, portMAX_DELAY);
@@ -61,6 +61,9 @@ void initGlobalContext() {
   context.webserverP = &webserver;
   context.aiEngine.init();
   context.networkInfo.init();
+  context.userReqQ.init();
+  context.onboardRGBInfoQ = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User*));
+  context.externalRGBInfoQ = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User*));
 }
 
 

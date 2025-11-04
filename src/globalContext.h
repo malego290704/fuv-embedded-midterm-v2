@@ -22,6 +22,8 @@ struct GlobalContext {
   AIEngine aiEngine;
   UserRequestQueue userReqQ;
   LiquidCrystal_I2C* lcdP;
+  QueueHandle_t onboardRGBInfoQ;
+  QueueHandle_t externalRGBInfoQ;
 };
 
 #endif
