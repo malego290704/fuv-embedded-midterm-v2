@@ -76,6 +76,7 @@ void initGlobalContext() {
   servo.attach(GPIO_NUM_5);
   context.servoP = &servo;
   context.servoInfoQ = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User*));
+  context.lcdInfoQ = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User*));
 }
 
 

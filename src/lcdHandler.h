@@ -14,10 +14,7 @@ void taskLCDHandler(void* pvParameters) {
   LiquidCrystal_I2C* lcdP = contextP->lcdP;
   DisplayState state = DisplayState::IDLE;
   lcdP->clear();
-  lcdP->noBacklight();
-  vTaskDelay(pdMS_TO_TICKS(2000));
-  lcdP->backlight();
-  contextP->logger.log(LOGGER_INFO, "Starting taskLCDHandler loop");
+  User* currentUser;
   for (;;) {
     if (state == DisplayState::IDLE) {
       lcdP->setCursor(0, 0);
@@ -37,9 +34,23 @@ void taskLCDHandler(void* pvParameters) {
         lcdP->print(contextP->networkInfo.stationIP);
       }
     } else if (state == DisplayState::USER_INFO) {
-      //
+      lcdP->clear();
+      lcdP->setCursor(0, 0);
+      lcdP->printf("Hello %s", currentUser->name);
+      lcdP->setCursor(0, 1);
+      if (currentUser->permission == UserPermission::Admin) {
+        lcdP->print("ADMIN");
+      } else if (currentUser->permission == UserPermission::Authorized) {
+        lcdP->print("AUTHENTICATED");
+      } else {
+        lcdP->print("UNAUTHENTICATED");
+      }
+      state = DisplayState::IDLE;
+      vTaskDelay(pdMS_TO_TICKS(5000));
     }
-    vTaskDelay(pdMS_TO_TICKS(500));
+    if (xQueueReceive(contextP->lcdInfoQ, &currentUser, pdMS_TO_TICKS(1000)) == pdTRUE) {
+      state = DisplayState::USER_INFO;
+    }
   }
   vTaskDelete(NULL);
 }

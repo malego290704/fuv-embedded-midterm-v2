@@ -27,6 +27,7 @@ struct GlobalContext {
   QueueHandle_t externalRGBInfoQ;
   Servo* servoP;
   QueueHandle_t servoInfoQ;
+  QueueHandle_t lcdInfoQ;
 };
 
 #endif

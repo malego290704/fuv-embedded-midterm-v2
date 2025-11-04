@@ -20,6 +20,7 @@ void taskUserRequestHandler(void* pvParameters) {
       xQueueSend(contextP->onboardRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
       xQueueSend(contextP->externalRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
       xQueueSend(contextP->servoInfoQ, &request.userP, pdMS_TO_TICKS(10));
+      xQueueSend(contextP->lcdInfoQ, &request.userP, pdMS_TO_TICKS(10));
     }
   }
   vTaskDelete(NULL);
