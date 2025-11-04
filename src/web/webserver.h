@@ -26,6 +26,11 @@ void webserverInit(GlobalContext* contextP) {
   serverP->on("/guest", HTTP_GET, [](AsyncWebServerRequest* requestP) {
     requestP->send(LittleFS, "/web/guest.html", "text/html");
   });
+  serverP->on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest* requestP) {
+    AsyncWebServerResponse* responseP = requestP->beginResponse(LittleFS, "/web/favicon.ico", "image/x-icon");
+    responseP->addHeader("Cache-Control", "max-age=31536000");
+    requestP->send(responseP);
+  });
   webserverAPIInit(contextP);
   loggerP->log(LOGGER_DEBUG, "Waiting for WiFi...");
   while (WiFi.status() != WL_CONNECTED) {

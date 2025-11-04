@@ -28,9 +28,9 @@ void taskNetworkHandler(void* pvParameters) {
     contextP->networkInfo.stationIP[0] = '\0';
     contextP->logger.log(LOGGER_WARN, "Disconnected to WiFi as station!");
     contextP->logger.log(LOGGER_WARN, "Reason for disconnection: %d", info.wifi_sta_disconnected.reason);
-    vTaskDelay(pdMS_TO_TICKS(1000));
-    networkConnectWifiStation(contextP);
-    vTaskDelay(pdMS_TO_TICKS(100));
+    // vTaskDelay(pdMS_TO_TICKS(1000));
+    // networkConnectWifiStation(contextP);
+    // vTaskDelay(pdMS_TO_TICKS(1000));
   }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
   WiFiEventId_t wifiEventStationGotIP = WiFi.onEvent([contextP](WiFiEvent_t event, WiFiEventInfo_t info) {
     snprintf(contextP->networkInfo.stationIP, 16, "%s", WiFi.localIP().toString().c_str());
@@ -40,7 +40,7 @@ void taskNetworkHandler(void* pvParameters) {
   networkOperationInit(contextP);
   networkConnectWifiStation(contextP);
   configTime(25200, 0, "pool.ntp.org");
-  vTaskDelay(pdMS_TO_TICKS(5000));
+  vTaskDelay(pdMS_TO_TICKS(10000));
   for (;;) {
     if (WiFi.status() != WL_CONNECTED) {
       loggerP->log(LOGGER_WARN, "Reconnecting to WiFi as station...");
