@@ -38,7 +38,9 @@ LiquidCrystal_I2C lcd(0x21, 16, 2);
 #include<ESP32Servo.h>
 Servo servo;
 
+#include<ESPAsyncWebServer.h>
 AsyncWebServer webserver(80);
+AsyncEventSource loggerSSE("/api/loggersse");
 
 
 void initUsers() {
@@ -68,6 +70,8 @@ void initGlobalContext() {
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
   context.webserverP = &webserver;
+  context.loggerSSEP = &loggerSSE;
+  context.loggerSSEInit = false;
   context.aiEngine.init();
   context.networkInfo.init();
   context.userReqQ.init();
@@ -92,7 +96,8 @@ void setup() {
     vTaskDelay(pdMS_TO_TICKS(10));
   }
   LOG_I("Finished init logger");
-  xTaskCreate(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL);
+  // xTaskCreate(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL);
+  xTaskCreatePinnedToCore(taskNetworkHandler, "NetworkHandler", 8192, &context, 1, NULL, 0);
   xTaskCreate(taskUserRequestHandler, "UserRequestHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskExternalRGBHandler, "ExternalRGBHandler", 2048, &context, 1, NULL);

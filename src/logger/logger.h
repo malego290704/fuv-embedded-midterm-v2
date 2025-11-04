@@ -9,6 +9,7 @@
 #include "logLevel.h"
 #include "logMessage.h"
 
+#include "globalContext.h"
 #include "configuration.h"
 
 typedef struct Logger {
@@ -16,6 +17,8 @@ typedef struct Logger {
   SemaphoreHandle_t serialMutex;
   QueueHandle_t queueLogMessage;
   bool initSuccess = false;
+  AsyncEventSource* sseP;
+  bool* sseInitP;
   bool init() {
     this->serialMutex = xSemaphoreCreateMutex();
     this->queueLogMessage = xQueueCreate(LOG_QUEUE_MAX_LENGTH, sizeof(LogMessage));
@@ -56,7 +59,7 @@ typedef struct Logger {
         long hours = minutes / 60;
         seconds %= 60;
         minutes %= 60;
-        sprintf(timeString, "[UPTIME %05lu:%02lu:%02lu]", hours, minutes, seconds);
+        sprintf(timeString, "[UPTIME %06lu:%02lu:%02lu]", hours, minutes, seconds);
       } else {
         struct tm timeinfo;
         localtime_r(&msg.timestamp, &timeinfo);
@@ -70,13 +73,16 @@ typedef struct Logger {
         case LOGGER_DEBUG: level_str = " [DEBUG] "; break;
         default:           level_str = " [UNKN]  "; break;
       }
+      char fullLogMessage[24+10+LOG_MESSAGE_MAX_LENGTH];
+      sprintf(fullLogMessage, "%s%s%s ", timeString, level_str, msg.message);
       if (xSemaphoreTake(this->serialMutex, portMAX_DELAY) == pdTRUE) {
-        Serial.print(timeString);
-        Serial.print(level_str);
-        Serial.println(msg.message);
+        Serial.println(fullLogMessage);
         Serial.flush();
         delay(200);
         xSemaphoreGive(this->serialMutex);
+      }
+      if (*sseInitP) {
+        sseP->send(fullLogMessage, "log", millis());
       }
     }
   }

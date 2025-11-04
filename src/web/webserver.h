@@ -10,7 +10,7 @@
 void webserverInit(GlobalContext* contextP) {
   AsyncWebServer* serverP = contextP->webserverP;
   Logger* loggerP = &contextP->logger;
-  loggerP->log(LOGGER_DEBUG, "Init webserver");
+  loggerP->log(LOGGER_DEBUG, "Init webserver!");
   serverP->on("/", HTTP_GET, [](AsyncWebServerRequest* requestP) {
     requestP->send(LittleFS, "/web/index.html", "text/html");
   });

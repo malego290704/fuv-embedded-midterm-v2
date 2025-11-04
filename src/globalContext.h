@@ -20,6 +20,8 @@ struct GlobalContext {
   NetworkInfo networkInfo;
   Logger logger;
   AsyncWebServer* webserverP;
+  AsyncEventSource* loggerSSEP;
+  bool loggerSSEInit;
   AIEngine aiEngine;
   UserRequestQueue userReqQ;
   LiquidCrystal_I2C* lcdP;

@@ -6,13 +6,15 @@
 #include "globalContext.h"
 
 void taskLoggerHandler(void* pvParameters) {
-  GlobalContext* context = (GlobalContext*)pvParameters;
-  bool initSuccess = context->logger.init();
+  GlobalContext* contextP = (GlobalContext*)pvParameters;
+  contextP->logger.sseP = contextP->loggerSSEP;
+  contextP->logger.sseInitP = &contextP->loggerSSEInit;
+  bool initSuccess = contextP->logger.init();
   if (!initSuccess) {
     vTaskDelete(NULL);
   };
   for (;;) {
-    context->logger.resolve();
+    contextP->logger.resolve();
   }
   vTaskDelete(NULL);
 }

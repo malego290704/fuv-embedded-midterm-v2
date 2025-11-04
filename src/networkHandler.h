@@ -35,8 +35,9 @@ void taskNetworkHandler(void* pvParameters) {
     contextP->logger.log(LOGGER_INFO, "Received IP as station!");
     contextP->logger.log(LOGGER_INFO, "STA IP: %s", contextP->networkInfo.stationIP);
   }, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
-  networkConnectWifiStation(contextP);
   networkOperationInit(contextP);
+  networkConnectWifiStation(contextP);
+  configTime(25200, 0, "pool.ntp.org");
   vTaskDelay(pdMS_TO_TICKS(5000));
   for (;;) {
     if (WiFi.status() != WL_CONNECTED) {
