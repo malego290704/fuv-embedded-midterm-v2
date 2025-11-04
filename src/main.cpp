@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "configuration.h"
 #include "globalContext.h"
@@ -54,6 +55,7 @@ void initFS() {
 
 
 void initGlobalContext() {
+  Wire.begin(11, 12);
   initUsers();
   context.onboardRGBP = &onboardRGB;
   context.externalRGBP = &externalRGB;

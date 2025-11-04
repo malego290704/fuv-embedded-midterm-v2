@@ -12,15 +12,11 @@ void taskExternalRGBHandler(void* pvParameters) {
   Adafruit_NeoPixel* lightP = contextP->externalRGBP;
   loggerP->log(LOGGER_INFO, "Init External RGB");
   lightP->begin();
+  lightP->fill(0);
+  lightP->show();
   User* currentUser;
   uint32_t currentColor;
   for (;;) {
-    // lightP->fill(0xffffff);
-    // lightP->show();
-    // vTaskDelay(pdMS_TO_TICKS(2000));
-    // lightP->fill(0);
-    // lightP->show();
-    // vTaskDelay(pdMS_TO_TICKS(2000));
     if (xQueueReceive(contextP->externalRGBInfoQ, &currentUser, pdMS_TO_TICKS(10)) == pdTRUE) {
       loggerP->log(LOGGER_INFO, "Lighting ExternalRGB for %s", currentUser->name);
       currentColor = currentUser->color;

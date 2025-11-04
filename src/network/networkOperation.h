@@ -27,10 +27,13 @@ void networkOperationInit(GlobalContext* contextP) {
 }
 
 void networkConnectWifiStation(GlobalContext* contextP) {
-  Logger* loggerP = &contextP->logger;
-  if (contextP->networkInfo.stationCredentialStatus != NetworkCredentialStatus::UNAVAILABLE) {
-    WiFi.begin(contextP->networkInfo.stationSSID, contextP->networkInfo.stationPassword);
+  if (WiFi.status() == WL_CONNECTED) {
+    return;
   }
+  if (contextP->networkInfo.stationCredentialStatus == NetworkCredentialStatus::UNAVAILABLE) {
+    return;
+  }
+  WiFi.begin(contextP->networkInfo.stationSSID, contextP->networkInfo.stationPassword);
 }
 
 void networkTrySyncNTP(GlobalContext* contextP) {

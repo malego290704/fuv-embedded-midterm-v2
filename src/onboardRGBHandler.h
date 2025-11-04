@@ -12,15 +12,11 @@ void taskOnboardRGBHandler(void* pvParameters) {
   Adafruit_NeoPixel* lightP = contextP->onboardRGBP;
   loggerP->log(LOGGER_INFO, "Init Onboard RGB");
   lightP->begin();
+  lightP->fill(0);
+  lightP->show();
   User* currentUser;
   uint32_t currentColor;
   for (;;) {
-    // lightP->fill(0xffffff);
-    // lightP->show();
-    // vTaskDelay(pdMS_TO_TICKS(1000));
-    // lightP->fill(0);
-    // lightP->show();
-    // vTaskDelay(pdMS_TO_TICKS(1000));
     if (xQueueReceive(contextP->onboardRGBInfoQ, &currentUser, pdMS_TO_TICKS(10)) == pdTRUE) {
       loggerP->log(LOGGER_INFO, "Lighting OnboardRGB for %s", currentUser->name);
       currentColor = currentUser->color;
