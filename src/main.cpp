@@ -18,6 +18,7 @@ struct GlobalContext context;
 #include "webHandler.h"
 #include "userRequestHandler.h"
 #include "lcdHandler.h"
+#include "servoHandler.h"
 
 
 #define LOG_E(format, ...) context.logger.log(LOGGER_ERROR, format, ##__VA_ARGS__)
@@ -33,6 +34,8 @@ Adafruit_NeoPixel externalRGB(4, GPIO_NUM_6, NEO_GRB + NEO_KHZ800);
 #include<LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x21, 16, 2);
 
+#include<ESP32Servo.h>
+Servo servo;
 
 AsyncWebServer webserver(80);
 
@@ -55,6 +58,10 @@ void initGlobalContext() {
   context.onboardRGBP = &onboardRGB;
   context.externalRGBP = &externalRGB;
   lcd.init();
+  lcd.clear();
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Initing...");
   context.lcdP = &lcd;
   context.littlefsMutex = xSemaphoreCreateMutex();
   initFS();
@@ -64,6 +71,9 @@ void initGlobalContext() {
   context.userReqQ.init();
   context.onboardRGBInfoQ = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User*));
   context.externalRGBInfoQ = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User*));
+  servo.attach(GPIO_NUM_5);
+  context.servoP = &servo;
+  context.servoInfoQ = xQueueCreate(MAX_ACCESS_QUEUE_LENGTH, sizeof(User*));
 }
 
 
@@ -83,6 +93,7 @@ void setup() {
   xTaskCreate(taskUserRequestHandler, "UserRequestHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskOnboardRGBHandler, "OnboardRGBHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskExternalRGBHandler, "ExternalRGBHandler", 2048, &context, 1, NULL);
+  xTaskCreate(taskServoHandler, "ServoHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskLCDHandler, "LCDHandler", 2048, &context, 1, NULL);
   xTaskCreate(taskWebHandler, "WebHandler", 4096, &context, 1, NULL);
   LOG_I("Finished setup()");

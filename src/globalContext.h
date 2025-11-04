@@ -4,6 +4,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <ESPAsyncWebServer.h>
 #include <LiquidCrystal_I2C.h>
+#include <ESP32Servo.h>
 
 #include "model/userList.h"
 #include "network/networkInfo.h"
@@ -24,6 +25,8 @@ struct GlobalContext {
   LiquidCrystal_I2C* lcdP;
   QueueHandle_t onboardRGBInfoQ;
   QueueHandle_t externalRGBInfoQ;
+  Servo* servoP;
+  QueueHandle_t servoInfoQ;
 };
 
 #endif

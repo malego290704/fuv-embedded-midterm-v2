@@ -19,6 +19,7 @@ void taskUserRequestHandler(void* pvParameters) {
       contextP->logger.log(LOGGER_INFO, "Received a request for: %s", request.userP->name);
       xQueueSend(contextP->onboardRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
       xQueueSend(contextP->externalRGBInfoQ, &request.userP, pdMS_TO_TICKS(10));
+      xQueueSend(contextP->servoInfoQ, &request.userP, pdMS_TO_TICKS(10));
     }
   }
   vTaskDelete(NULL);
